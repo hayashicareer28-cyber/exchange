@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#162b32">
+  <meta name="description" content="2つのレジの枚数から、金額を変えずに行える両替手順を作成するGW両替サポート。">
+  <title>GW 両替サポート</title>
+  <link rel="stylesheet" href="style.css?v=20261001r3">
+  <script src="script.js?v=20261001r3" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">本文へ移動</a>
+  <aside class="sidebar" aria-label="アプリ情報">
+    <a class="brand" href="#exchange" aria-label="GW 両替サポート ホーム"><span class="brand-mark">GW<span></span></span><span class="brand-copy">CASH OPERATIONS<br><strong>両替サポート</strong></span></a>
+    <div class="sidebar-body">
+      <p class="sidebar-label">DAILY OPERATIONS</p>
+      <a class="nav-item active" href="#exchange" data-view="exchange"><span class="nav-symbol">01</span>両替プランをつくる<span aria-hidden="true">↗</span></a>
+      <a class="nav-item" href="#settings" data-view="settings"><span class="nav-symbol">02</span>両替の設定</a>
+      <div class="sidebar-note"><span class="sidebar-note-label">ひと目で、間違いなく。</span><p>レジごとの取り出しと入金を<br>同じ金額にそろえます。</p><div class="balance-illustration" aria-hidden="true"><span>OUT</span><i>=</i><span>IN</span></div></div>
+    </div>
+    <div class="sidebar-footer"><span class="live-dot"></span>端末内で計算・保存<br><small>GW / EXCHANGE SUPPORT</small></div>
+  </aside>
+
+  <div class="workspace">
+    <header class="topbar"><span class="topbar-label">毎日のレジ締めを、もっとスムーズに。</span><div class="topbar-actions"><time id="today-label" aria-label="今日の日付"></time><a class="button button-subtle" id="settings-link" href="#settings" data-view="settings">設定</a><button class="button button-help" id="help-button" type="button"><span class="help-icon" aria-hidden="true">?</span>使い方・ルール</button></div></header>
+    <main id="main">
+      <p id="settings-read-error" class="notice warn" role="alert" hidden></p>
+      <div id="exchange-page">
+      <section class="page-intro" aria-labelledby="page-title"><div><p class="eyebrow"><span></span> GW 両替システム</p><h1 id="page-title">明日の釣銭を、<br class="mobile-break">迷わず準備。</h1><p class="intro-description">いまある枚数を入力するだけ。<br class="mobile-break">2つのレジの両替手順をまとめます。</p></div><span class="intro-tag">2レジ対応</span></section>
+      <ol class="progress-steps" aria-label="操作の流れ"><li class="current"><span>1</span>枚数を入力</li><li><span>2</span>両替手順を確認</li><li><span>3</span>両替を実施</li></ol>
+
+      <noscript><div class="notice error" role="alert">このアプリにはJavaScriptが必要です。ブラウザーのJavaScriptを有効にして、ページを開き直してください。</div></noscript>
+      <div id="startup-warning" class="notice warn" role="alert">アプリを読み込んでいます。この表示が消えない場合は、index.html・style.css・script.jsを同じフォルダーに置いて、ページを開き直してください。</div>
+
+      <section id="input-section" class="input-section" aria-labelledby="input-title">
+        <div class="section-heading"><div class="section-title-group"><span class="section-index">01</span><div><p class="eyebrow">CURRENT CASH</p><h2 id="input-title">レジの枚数を入力</h2></div></div><div class="section-actions"><button id="sample-button" class="button button-subtle" type="button">サンプルを入力</button><button id="reset-button" class="button button-text" type="button">入力クリア</button></div></div>
+        <p id="settings-summary" class="settings-summary" role="status">初期設定で計算します。</p>
+        <p id="input-hint" class="section-description">ドロアの保管分も含め、各レジが持っている現金の枚数を入力してください。ない金種は0枚です。</p>
+        <form id="cash-form" novalidate>
+          <div class="input-card"><table class="cash-table"><caption class="sr-only">金種ごとの1レジと2レジの現在枚数</caption><colgroup><col class="denom-col"><col class="count-col"><col class="count-col"><col class="target-col"></colgroup><thead><tr><th scope="col">金種</th><th scope="col"><span class="register-dot register-one"></span>1レジ<span class="th-unit">枚</span></th><th scope="col"><span class="register-dot register-two"></span>2レジ<span class="th-unit">枚</span></th><th scope="col">枚数の目安<small>各レジ</small></th></tr></thead><tbody id="cash-inputs"></tbody><tfoot><tr><th scope="row">現在の合計</th><td><strong id="r1-total">0円</strong><span id="r1-status" class="total-status">未入力</span></td><td><strong id="r2-total">0円</strong><span id="r2-status" class="total-status">未入力</span></td><td class="total-note">両替後も<br>同額に保ちます</td></tr></tfoot></table></div>
+          <div id="input-errors" class="notice error" role="alert" hidden></div>
+          <div class="form-bottom"><p id="save-status" class="save-status" role="status">入力した枚数は、この端末のブラウザーに保存されます。</p><button id="calculate-button" class="button button-primary" type="submit">両替プランを作成<span aria-hidden="true">→</span></button></div>
+        </form>
+        <aside class="callout"><span class="callout-icon" aria-hidden="true">i</span><p><strong>棒金の余りは、ドロアへ。</strong> 目安より多く受け取った小銭も、同じレジの残高に含めます。納金の計算は行わず、入力残高を保ったまま両替します。</p></aside>
+      </section>
+
+      <section id="empty-state" class="empty-state" aria-label="両替プランの表示場所"><div class="empty-symbol" aria-hidden="true"><span></span><span></span><span></span></div><div><h2>両替の手順が、ここにまとまります。</h2><p>各レジから取り出すお札と、両替で受け取る金種・枚数を表示します。</p></div><span class="empty-arrow" aria-hidden="true">↗</span></section>
+
+      <section id="results" class="results-section" aria-labelledby="results-title" hidden><div class="section-heading"><div class="section-title-group"><span class="section-index">02</span><div><p class="eyebrow">EXCHANGE PLAN</p><h2 id="results-title" tabindex="-1">両替プラン</h2></div></div><div class="section-actions"><button id="copy-button" class="button button-subtle" type="button">結果をコピー</button><button id="print-button" class="button button-subtle" type="button">印刷 / PDF</button></div></div><p id="result-status" class="sr-only" role="status" aria-live="polite"></p><div id="result-content"></div></section>
+
+      </div>
+      <section id="settings-page" aria-labelledby="settings-title" hidden>
+        <div class="page-intro"><div><p class="eyebrow">EXCHANGE SETTINGS</p><h1 id="settings-title" tabindex="-1">両替の設定</h1><p class="intro-description">いつもの枚数に合わせて、基準を調整できます。<br>1レジ・2レジの両方に共通で使う設定です。</p></div></div>
+        <form id="settings-form" novalidate>
+          <section class="settings-card" aria-labelledby="target-settings-title">
+            <h2 id="target-settings-title">各金種の目安枚数</h2>
+            <p>下限を下回った金種を補充候補にします。上限は目安です。棒金の単位などにより上限を超える場合があります。</p>
+            <table class="settings-table"><thead><tr><th scope="col">金種</th><th scope="col">下限</th><th scope="col">上限</th></tr></thead><tbody id="settings-targets"></tbody></table>
+            <p class="settings-note">各欄は0〜500枚。下限を上限以下にしてください。10,000円札には目安枚数を設定しません。</p>
+          </section>
+          <section class="settings-card" aria-labelledby="condition-settings-title">
+            <h2 id="condition-settings-title">両替の対象条件</h2>
+            <label class="settings-field" for="coin-threshold"><span>100円以下を両替の対象にする、2レジ合計の上限</span><span class="settings-value"><input id="coin-threshold" class="settings-number" type="text" inputmode="numeric" maxlength="4" autocomplete="off" required><span>枚以下</span></span></label>
+            <p class="settings-note">金種ごとに判定します。初期値は80枚。0〜1,000枚で設定できます。</p>
+            <label class="settings-field" for="reserve-amount"><span>釣銭準備金の目安（1レジあたり）</span><span class="settings-value"><input id="reserve-amount" class="settings-number reserve-input" type="text" inputmode="numeric" maxlength="8" autocomplete="off" required><span>円</span></span></label>
+            <p class="settings-note">入力画面に表示する目安です。残高をこの金額にそろえる計算や納金は行いません。初期値は100,000円。</p>
+          </section>
+          <p class="settings-fixed">お札だけを取り出す・100円以下は50枚の棒金単位・各レジの収支は0円、という両替ルールは共通です。</p>
+          <p id="settings-errors" class="notice error" role="alert" hidden></p>
+          <p id="settings-status" class="settings-status" role="status"></p>
+          <div class="settings-actions"><button id="settings-defaults" class="button button-subtle" type="button">初期値に戻す</button><div><button id="settings-cancel" class="button button-text" type="button">保存せず戻る</button><button id="settings-save" class="button button-primary" type="submit">保存して戻る</button></div></div>
+          <p class="settings-note">設定はこの端末のブラウザーに保存されます。別の端末やブラウザーには共有されません。</p>
+        </form>
+      </section>
+      <footer class="page-footer"><span>GW 両替サポート <span class="footer-separator">/</span> 2026.10 rev.3</span><span><span class="offline-dot"></span>ネット接続なしでも利用できます</span></footer>
+    </main>
+  </div>
+
+  <dialog id="help-dialog" aria-labelledby="help-title"><div class="dialog-heading"><div><p class="eyebrow">QUICK GUIDE</p><h2 id="help-title">使い方・両替ルール</h2></div><form method="dialog"><button class="button button-close" aria-label="使い方を閉じる">×</button></form></div><div class="dialog-body"><p class="help-lead">入力 → 両替 → 金額確認。<br>3つのステップで、釣銭の準備ができます。</p><ol class="help-steps"><li><strong>現在の枚数を入力</strong><p>1レジ・2レジについて、各金種の枚数を入力します。ドロアで保管している分も含め、棒金は枚数に換算してください（1本＝50枚）。ない金種は0枚です。</p></li><li><strong>「両替プランを作成」を押す</strong><p>レジ別に、取り出すお札と両替して受け取る金種・枚数だけを表示します。「両替なし」の場合は取り出しません。</p></li><li><strong>両替前後の金額を照合</strong><p>取り出し額と受け取り額が同じか、現物も数えて確認します。結果はコピーや印刷で持ち出せます。入力を変更した場合は、プランを再作成してください。</p></li></ol><h3>目標とする枚数</h3><div class="table-scroll"><table class="help-table"><thead><tr><th scope="col">金種</th><th scope="col">各レジの目安</th></tr></thead><tbody id="help-targets"></tbody></table></div><h3>両替のルール</h3><ul class="help-rules"><li><strong>レジごとに収支は0円。</strong>取り出した分と同額を、同じレジへ入れます。レジ間の現金移動は、このアプリでは計算しません。</li><li><strong>取り出せるのはお札だけ。</strong>お札→お札、またはお札→小銭の両替を行います。小銭を出す両替は計算しません。</li><li><strong>100円以下は、2レジ合計<span id="help-coin-threshold">80</span>枚以下の金種だけ対象。</strong>入力時の枚数で判定します。<span id="help-coin-excluded">81</span>枚以上ある金種は、一方のレジで不足していても外部両替しません。</li><li><strong>100円以下は1本50枚の棒金単位。</strong>合計額を1,000円単位に合わせるため、余分な棒金や500円玉を受け取る場合があります。例えば5円棒金2本＋500円玉1枚で1,000円です。</li><li><strong>余剰分はドロアに保管できます。</strong>余剰もレジの現金として、受け取り額と両替後の枚数に含めます。</li></ul><div class="notice"><strong><span id="help-reserve-label">100,000円</span>は準備金の基準です。</strong><p>納金の計算は行いません。入力残高を保ったまま両替します。入力残高や外部両替の対象条件によっては、すべての金種を目安どおりにそろえられません。結果は両替の指示だけを表示し、目安枚数への到達を保証するものではありません。</p></div><h3>設定を変更するとき</h3><p>画面上部の「設定」で目安枚数と対象条件を変更し、「保存して戻る」を押します。「初期値に戻す」を押した場合も、保存すると適用されます。設定の保存後は両替プランを作成し直してください。</p><h3>入力とデータの保存</h3><p>入力できるのは0以上の整数です。「サンプルを入力」は動作確認用の枚数をセットします。「入力クリア」は現在の入力を消去します。入力値は利用中のブラウザーのみに保存され、他の端末とは共有されません。ブラウザーの設定によって保存できない場合があります。</p><h3>ボタンを押しても動かないとき</h3><p>index.html・style.css・script.jsを同じフォルダーに置いているか確認し、ページを読み込み直してください。ファイルの中に、コードを囲む「```」は貼り付けないでください。公開サイトの場合は、最新のファイルが反映されているかも確認してください。</p><p class="muted">詳しい仕様は、同梱の「使い方と仕様.md」を確認してください。</p></div><form method="dialog" class="dialog-footer"><button class="button button-primary">確認しました</button></form></dialog>
+</body>
+</html>
+
+
